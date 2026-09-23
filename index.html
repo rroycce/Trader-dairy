@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Щоденник Трейдера</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --bg-dark: #121212;
+            --surface: #1e1e1e;
+            --primary: #00ff88;
+            --text: #e0e0e0;
+            --border: #333;
+            --red: #ff4444;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+        }
+        .container { max-width: 900px; margin: 0 auto; }
+        .card {
+            background-color: var(--surface);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            margin-bottom: 20px;
+        }
+        input, select, button {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+            background: #2a2a2a;
+            color: white;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: var(--primary);
+            color: black;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            margin-top: 15px;
+        }
+        button:hover { opacity: 0.8; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        .win { color: var(--primary); }
+        .loss { color: var(--red); }
+        .hidden { display: none; }
+        
+        /* Грід для форми додавання */
+        .trade-form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Блок Авторизації -->
+        <div id="auth-section" class="card">
+            <h2>Вхід / Реєстрація</h2>
+            <input type="email" id="email" placeholder="Email">
+            <input type="password" id="password" placeholder="Пароль">
+            <button onclick="handleAuth('login')">Увійти</button>
+            <button onclick="handleAuth('register')" style="background: transparent; border: 1px solid var(--primary); color: var(--primary);">Зареєструватися</button>
+            <p id="auth-msg" style="color: var(--red); font-size: 14px;"></p>
+        </div>
+
+        <!-- Головний Дашборд -->
+        <div id="dashboard-section" class="hidden">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h2>Торговий Дашборд</h2>
+                <button onclick="logOut()" style="width: auto; padding: 8px 15px; background: var(--border); color: white;">Вийти</button>
+            </div>
+            
+            <!-- Форма нової угоди -->
+            <div class="card">
+                <h3>Додати угоду</h3>
+                <div class="trade-form-grid">
+                    <input type="text" id="pair" placeholder="Пара (напр. EURUSD)" required>
+                    <select id="direction">
+                        <option value="Long">Long 🟢</option>
+                        <option value="Short">Short 🔴</option>
+                    </select>
+                    <input type="number" id="entry" placeholder="Ціна входу" step="0.00001" required>
+                    <input type="number" id="exit" placeholder="Ціна виходу" step="0.00001" required>
+                </div>
+                <input type="text" id="notes" placeholder="Нотатки (чому зайшов, помилки...)">
+                <button onclick="addTrade()">Зберегти угоду</button>
+            </div>
+
+            <!-- Таблиця угод -->
+            <div class="card" style="overflow-x: auto;">
+                <h3>Історія угод</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Дата</th>
+                            <th>Пара</th>
+                            <th>Напрямок</th>
+                            <th>Вхід</th>
+                            <th>Вихід</th>
+                            <th>Результат (Pnl)</th>
+                            <th>Нотатки</th>
+                        </tr>
+                    </thead>
+                    <tbody id="trades-body">
+                        <!-- Угоди генеруватимуться тут -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
